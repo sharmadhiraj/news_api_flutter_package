@@ -45,7 +45,7 @@ Parameters
 <hr/>
 
 ### Errors
-Any error occurred is returned will be instance of ApiError.
+Any error occurred will be instance of ApiError.
 ```dart
 class ApiError{
     String code;
