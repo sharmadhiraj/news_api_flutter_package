@@ -1,8 +1,7 @@
 name: news_api_flutter_package
-description: Flutter package for accessing News API.
-version: 1.0.0
-author:
-homepage:
+description: Flutter package for accessing News API. (https://newsapi.org/)
+version: 1.0.1
+homepage: https://github.com/sharmadhiraj/news_api_flutter_package
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

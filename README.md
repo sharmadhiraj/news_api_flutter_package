@@ -1,50 +1,50 @@
-# News API flutter package
+# News API Flutter Package
 
 Flutter package for accessing News API. (https://newsapi.org/)
 
-#### Getting Started
+## Getting Started
 * <a href="https://pub.dev/packages/news_api_flutter_package/install" target="_blank">Installation Guide</a>
 * <a href="https://pub.dev/packages/news_api_flutter_package/example" target="_blank">Example</a>
 
 
-#### Initialization
+## Initialization
 ```dart
 NewsAPI _newsAPI = NewsAPI("your_api_key");
 ```
 <a href="https://newsapi.org/register" target="_blank">Get API Key</a>
 <hr/>
 
-#### Top Headlines
+### Top Headlines
 ```dart
 Future<List<Article>> articleList = _newsAPI.getTopHeadlines();
 ```
-**Parameters**  
+Parameters  
 *String country, String category, String sources, String query, int pageSize, int page*
 
 <a href="https://newsapi.org/docs/endpoints/top-headlines" target="_blank">Details on request and parameters.</a>
 
-#### Everything
+### Everything
 ```dart
 Future<List<Article>> articleList = _newsAPI.getEverything();
 ```
-**Parameters**  
+Parameters  
 *String query, String queryInTitle, String sources, String domains, String excludeDomains, DateTime from, DateTime to, String language, String sortBy, int pageSize, int page*
 
 <a href="https://newsapi.org/docs/endpoints/everything" target="_blank">Details on request and parameters.</a>
 
 
-#### Sources
+### Sources
 ```dart
 Future<List<Source>> sources = _newsAPI.getSources();
 ```
-**Parameters**  
+Parameters  
 *String category, String language, String country*
 
 <a href="https://newsapi.org/docs/endpoints/sources" target="_blank">Details on request and parameters.</a>
 
 <hr/>
 
-#### Errors
+### Errors
 Any error occurred is returned will be instance of ApiError.
 ```dart
 class ApiError{
