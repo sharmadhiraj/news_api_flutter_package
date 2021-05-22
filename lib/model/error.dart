@@ -1,5 +1,5 @@
 class ApiError {
-  final String code, message;
+  final String? code, message;
 
   ApiError(this.code, this.message);
 

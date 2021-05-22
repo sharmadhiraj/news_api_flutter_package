@@ -9,7 +9,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  final NewsAPI _newsAPI = NewsAPI("aa67d8d98c8e4ad1b4f16dbd5f3be348");
+  final NewsAPI _newsAPI = NewsAPI("API_KEY");
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +65,8 @@ class HomePage extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
           return snapshot.connectionState == ConnectionState.done
               ? snapshot.hasData
-                  ? _buildArticleListView(snapshot.data)
-                  : _buildError(snapshot.error)
+                  ? _buildArticleListView(snapshot.data!)
+                  : _buildError(snapshot.error as ApiError)
               : _buildProgress();
         });
   }
@@ -78,52 +77,55 @@ class HomePage extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
           return snapshot.connectionState == ConnectionState.done
               ? snapshot.hasData
-                  ? _buildArticleListView(snapshot.data)
-                  : _buildError(snapshot.error)
+                  ? _buildArticleListView(snapshot.data!)
+                  : _buildError(snapshot.error as ApiError)
               : _buildProgress();
         });
   }
 
   Widget _buildArticleListView(List<Article> articles) {
     return ListView.builder(
-        itemCount: articles.length,
-        itemBuilder: (context, index) {
-          Article article = articles[index];
-          return Card(
-            child: ListTile(
-              title: Text(article.title, maxLines: 2),
-              subtitle: Text(article.description ?? "", maxLines: 3),
-              trailing: article.urlToImage == null
-                  ? null
-                  : Image.network(article.urlToImage),
-            ),
-          );
-        });
+      itemCount: articles.length,
+      itemBuilder: (context, index) {
+        Article article = articles[index];
+        return Card(
+          child: ListTile(
+            title: Text(article.title!, maxLines: 2),
+            subtitle: Text(article.description ?? "", maxLines: 3),
+            trailing: article.urlToImage == null
+                ? null
+                : Image.network(article.urlToImage!),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildSourcesTabView() {
     return FutureBuilder<List<Source>>(
-        future: _newsAPI.getSources(),
-        builder: (BuildContext context, AsyncSnapshot<List<Source>> snapshot) {
-          return snapshot.connectionState == ConnectionState.done
-              ? snapshot.hasData
-                  ? _buildSourceListView(snapshot.data)
-                  : _buildError(snapshot.error)
-              : _buildProgress();
-        });
+      future: _newsAPI.getSources(),
+      builder: (BuildContext context, AsyncSnapshot<List<Source>> snapshot) {
+        return snapshot.connectionState == ConnectionState.done
+            ? snapshot.hasData
+                ? _buildSourceListView(snapshot.data!)
+                : _buildError(snapshot.error as ApiError)
+            : _buildProgress();
+      },
+    );
   }
 
   Widget _buildSourceListView(List<Source> sources) {
     return ListView.builder(
-        itemCount: sources.length,
-        itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              title: Text(sources[index].name),
-              subtitle: Text(sources[index].description),
-            ),
-          );
-        });
+      itemCount: sources.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: ListTile(
+            title: Text(sources[index].name!),
+            subtitle: Text(sources[index].description!),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildProgress() {
@@ -143,7 +145,7 @@ class HomePage extends StatelessWidget {
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(height: 4),
-            Text(error.message, textAlign: TextAlign.center),
+            Text(error.message!, textAlign: TextAlign.center),
           ],
         ),
       ),

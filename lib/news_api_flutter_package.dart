@@ -1,12 +1,12 @@
 library news_api_flutter_package;
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:news_api_flutter_package/model/article.dart';
-
-import 'model/error.dart';
-import 'model/source.dart';
+import 'package:news_api_flutter_package/model/error.dart';
+import 'package:news_api_flutter_package/model/source.dart';
 
 const String BASE_URL = "https://newsapi.org/v2/";
 
@@ -19,22 +19,26 @@ class NewsAPI {
     url = "$url&apiKey=$apiKey";
     print(url);
     try {
-      var response = await http.get(url);
+      var response = await http.get(Uri.parse(url));
       Map<String, dynamic> responseJson = json.decode(response.body);
       if (responseJson["status"].toString().toLowerCase() == "ok") {
         return responseJson[key];
       }
       return Future.error(
-          ApiError(responseJson["code"], responseJson["message"]));
+        ApiError(
+          responseJson["code"],
+          responseJson["message"],
+        ),
+      );
     } catch (e) {
       return Future.error(ApiError("unknown", e.toString()));
     }
   }
 
   Future<List<Source>> getSources({
-    String category,
-    String language,
-    String country,
+    String? category,
+    String? language,
+    String? country,
   }) async {
     String url = "${BASE_URL}sources?x=y";
     if (category != null)
@@ -44,24 +48,24 @@ class NewsAPI {
           "$url&language=${language.toString().toLowerCase().split(".").last}";
     if (country != null)
       url = "$url&country=${country.toString().toLowerCase().split(".").last}";
-    return Source.parseList(await _call(
+    return Source.parseList(await (_call(
       url,
       "sources",
-    ));
+    )));
   }
 
   Future<List<Article>> getEverything({
-    String query,
-    String queryInTitle,
-    String sources,
-    String domains,
-    String excludeDomains,
-    DateTime from,
-    DateTime to,
-    String language,
-    String sortBy,
-    int pageSize,
-    int page,
+    String? query,
+    String? queryInTitle,
+    String? sources,
+    String? domains,
+    String? excludeDomains,
+    DateTime? from,
+    DateTime? to,
+    String? language,
+    String? sortBy,
+    int? pageSize,
+    int? page,
   }) async {
     String url = "${BASE_URL}everything?x=y";
     if (query != null) url = "$url&q=$query";
@@ -75,19 +79,19 @@ class NewsAPI {
     if (sortBy != null) url = "$sortBy&q=$sortBy";
     if (pageSize != null) url = "$url&pageSize=$pageSize";
     if (page != null) url = "$url&page=$page";
-    return Article.parseList(await _call(
+    return Article.parseList(await (_call(
       url,
       "articles",
-    ));
+    )));
   }
 
   Future<List<Article>> getTopHeadlines({
-    String country,
-    String category,
-    String sources,
-    String query,
-    int pageSize,
-    int page,
+    String? country,
+    String? category,
+    String? sources,
+    String? query,
+    int? pageSize,
+    int? page,
   }) async {
     String url = "${BASE_URL}top-headlines?x=y";
     if (country != null) url = "$url&country=$country";
@@ -96,10 +100,10 @@ class NewsAPI {
     if (query != null) url = "$url&q=$query";
     if (pageSize != null) url = "$url&pageSize=$pageSize";
     if (page != null) url = "$url&page=$page";
-    return Article.parseList(await _call(
+    return Article.parseList(await (_call(
       url,
       "articles",
-    ));
+    )));
   }
 
   String _formatDate(DateTime dt) {

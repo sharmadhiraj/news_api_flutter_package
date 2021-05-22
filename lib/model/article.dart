@@ -2,7 +2,7 @@ import 'package:news_api_flutter_package/model/source.dart';
 
 class Article {
   final Source source;
-  final String author,
+  final String? author,
       title,
       description,
       url,

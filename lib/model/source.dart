@@ -1,5 +1,5 @@
 class Source {
-  final String id, name, description, url, category, language, country;
+  final String? id, name, description, url, category, language, country;
 
   Source(
     this.id,
