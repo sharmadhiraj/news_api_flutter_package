@@ -75,8 +75,8 @@ class NewsAPI {
     if (excludeDomains != null) url = "$url&excludeDomains=$excludeDomains";
     if (from != null) url = "$url&from=${_formatDate(from)}";
     if (to != null) url = "$url&to=${_formatDate(to)}";
-    if (language != null) url = "$language&q=$language";
-    if (sortBy != null) url = "$sortBy&q=$sortBy";
+    if (language != null) url = "$url&q=$language";
+    if (sortBy != null) url = "$url&q=$sortBy";
     if (pageSize != null) url = "$url&pageSize=$pageSize";
     if (page != null) url = "$url&page=$page";
     return Article.parseList(await (_call(
