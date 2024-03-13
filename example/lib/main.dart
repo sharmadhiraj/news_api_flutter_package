@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  final NewsAPI _newsAPI = NewsAPI("API_KEY");
+  final NewsAPI _newsAPI = NewsAPI(apiKey: "API_KEY");
 
   @override
   Widget build(BuildContext context) {

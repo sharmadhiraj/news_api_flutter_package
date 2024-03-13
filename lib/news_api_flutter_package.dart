@@ -1,59 +1,56 @@
-library news_api_flutter_package;
-
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:news_api_flutter_package/model/article.dart';
-import 'package:news_api_flutter_package/model/error.dart';
 import 'package:news_api_flutter_package/model/source.dart';
+import 'package:news_api_flutter_package/util.dart';
 
-const String BASE_URL = "https://newsapi.org/v2/";
-
+/// A class for interacting with the News API.
 class NewsAPI {
+  /// The API key used for authentication.
   final String apiKey;
 
-  NewsAPI(this.apiKey);
+  /// Creates a [NewsAPI] instance with the given [apiKey].
+  NewsAPI({required this.apiKey});
 
-  Future<dynamic> _call(String url, String key) async {
-    url = "$url&apiKey=$apiKey";
-    print(url);
-    try {
-      var response = await http.get(Uri.parse(url));
-      Map<String, dynamic> responseJson = json.decode(response.body);
-      if (responseJson["status"].toString().toLowerCase() == "ok") {
-        return responseJson[key];
-      }
-      return Future.error(
-        ApiError(
-          responseJson["code"],
-          responseJson["message"],
-        ),
-      );
-    } catch (e) {
-      return Future.error(ApiError("unknown", e.toString()));
-    }
-  }
-
+  /// Fetches a list of news sources from the API.
+  ///
+  /// Optional parameters:
+  ///  - [category]: The category of news sources to retrieve.
+  ///  - [language]: The language of news sources to retrieve.
+  ///  - [country]: The country of news sources to retrieve.
   Future<List<Source>> getSources({
     String? category,
     String? language,
     String? country,
   }) async {
-    String url = "${BASE_URL}sources?x=y";
-    if (category != null)
-      url = "$url&category=${category.toString().split(".").last}";
-    if (language != null)
-      url =
-          "$url&language=${language.toString().toLowerCase().split(".").last}";
-    if (country != null)
-      url = "$url&country=${country.toString().toLowerCase().split(".").last}";
-    return Source.parseList(await (_call(
-      url,
+    final String url = Util.buildSourcesUrl(
       "sources",
-    )));
+      category,
+      language,
+      country,
+    );
+    final dynamic response = await Util.call(
+      apiKey: apiKey,
+      url: url,
+      dataKey: "sources",
+    );
+    return Source.parseList(response);
   }
 
+  /// Fetches a list of articles based on the provided query parameters.
+  ///
+  /// Optional parameters:
+  ///  - [query]: The search query.
+  ///  - [queryInTitle]: Search for articles with the query term in the title.
+  ///  - [sources]: A comma-separated list of source IDs or domains.
+  ///  - [domains]: A comma-separated list of domains (e.g., bbc.co.uk, techcrunch.com).
+  ///  - [excludeDomains]: A comma-separated list of domains to exclude.
+  ///  - [from]: The earliest date (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss) to retrieve articles from.
+  ///  - [to]: The latest date (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss) to retrieve articles to.
+  ///  - [language]: The language of the articles.
+  ///  - [sortBy]: The order to sort articles in.
+  ///  - [pageSize]: The number of articles per page.
+  ///  - [page]: The page number to retrieve.
   Future<List<Article>> getEverything({
     String? query,
     String? queryInTitle,
@@ -67,24 +64,36 @@ class NewsAPI {
     int? pageSize,
     int? page,
   }) async {
-    String url = "${BASE_URL}everything?x=y";
-    if (query != null) url = "$url&q=$query";
-    if (queryInTitle != null) url = "$url&qInTitle=$queryInTitle";
-    if (sources != null) url = "$url&sources=$sources";
-    if (domains != null) url = "$url&domains=$domains";
-    if (excludeDomains != null) url = "$url&excludeDomains=$excludeDomains";
-    if (from != null) url = "$url&from=${_formatDate(from)}";
-    if (to != null) url = "$url&to=${_formatDate(to)}";
-    if (language != null) url = "$url&language=$language";
-    if (sortBy != null) url = "$url&sortBy=$sortBy";
-    if (pageSize != null) url = "$url&pageSize=$pageSize";
-    if (page != null) url = "$url&page=$page";
-    return Article.parseList(await (_call(
-      url,
-      "articles",
-    )));
+    final String url = Util.buildEverythingUrl(
+      query,
+      queryInTitle,
+      sources,
+      domains,
+      excludeDomains,
+      from,
+      to,
+      language,
+      sortBy,
+      pageSize,
+      page,
+    );
+    final dynamic response = await Util.call(
+      apiKey: apiKey,
+      url: url,
+      dataKey: "articles",
+    );
+    return Article.parseList(response);
   }
 
+  /// Fetches a list of top headlines based on the provided query parameters.
+  ///
+  /// Optional parameters:
+  ///  - [country]: The 2-letter ISO 3166-1 code of the country to retrieve headlines for.
+  ///  - [category]: The category of articles to retrieve.
+  ///  - [sources]: A comma-separated list of source IDs or domains.
+  ///  - [query]: The search query.
+  ///  - [pageSize]: The number of articles per page.
+  ///  - [page]: The page number to retrieve.
   Future<List<Article>> getTopHeadlines({
     String? country,
     String? category,
@@ -93,20 +102,19 @@ class NewsAPI {
     int? pageSize,
     int? page,
   }) async {
-    String url = "${BASE_URL}top-headlines?x=y";
-    if (country != null) url = "$url&country=$country";
-    if (category != null) url = "$url&category=$category";
-    if (sources != null) url = "$url&sources=$sources";
-    if (query != null) url = "$url&q=$query";
-    if (pageSize != null) url = "$url&pageSize=$pageSize";
-    if (page != null) url = "$url&page=$page";
-    return Article.parseList(await (_call(
-      url,
-      "articles",
-    )));
-  }
-
-  String _formatDate(DateTime dt) {
-    return "${dt.year}-${dt.month}-${dt.day}T${dt.hour}:${dt.minute}:${dt.second}";
+    final String url = Util.buildTopHeadlinesUrl(
+      country,
+      category,
+      sources,
+      query,
+      pageSize,
+      page,
+    );
+    final dynamic response = await Util.call(
+      apiKey: apiKey,
+      url: url,
+      dataKey: "articles",
+    );
+    return Article.parseList(response);
   }
 }

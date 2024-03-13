@@ -34,7 +34,8 @@ class Article {
     );
   }
 
-  static List<Article> parseList(List<dynamic> list) {
+  static List<Article> parseList(dynamic list) {
+    if (list == null || list is! List || list.isEmpty) return [];
     return list.map((e) => Article.fromJson(e)).toList();
   }
 }

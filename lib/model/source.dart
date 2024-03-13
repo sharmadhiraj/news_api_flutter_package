@@ -23,7 +23,8 @@ class Source {
     );
   }
 
-  static List<Source> parseList(List<dynamic> list) {
+  static List<Source> parseList(dynamic list) {
+    if (list == null || list is! List || list.isEmpty) return [];
     return list.map((e) => Source.fromJson(e)).toList();
   }
 }
