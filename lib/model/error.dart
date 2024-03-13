@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ApiError {
   final String? code, message;
 
@@ -8,5 +10,13 @@ class ApiError {
       json["code"],
       json["message"],
     );
+  }
+
+  @override
+  String toString() {
+    return jsonEncode({
+      "code": code,
+      "message": message,
+    });
   }
 }
