@@ -41,9 +41,13 @@ class Util {
         : value.toString().split(".").last;
   }
 
-  static String buildSourcesUrl(String path,
-      [String? category, String? language, String? country]) {
-    final url = Uri.parse("$path?x=y");
+  static String buildSourcesUrl(
+    String path,
+    String? category,
+    String? language,
+    String? country,
+  ) {
+    final Uri url = Uri.parse("$path?x=y");
     final queryParams = <String, String>{};
     if (category != null) queryParams["category"] = Util.sanitize(category);
     if (language != null) queryParams["language"] = Util.sanitize(language);
@@ -52,18 +56,19 @@ class Util {
   }
 
   static String buildEverythingUrl(
-      String? query,
-      String? queryInTitle,
-      String? sources,
-      String? domains,
-      String? excludeDomains,
-      DateTime? from,
-      DateTime? to,
-      String? language,
-      String? sortBy,
-      int? pageSize,
-      int? page) {
-    final url = Uri.parse("everything?x=y");
+    String? query,
+    String? queryInTitle,
+    String? sources,
+    String? domains,
+    String? excludeDomains,
+    DateTime? from,
+    DateTime? to,
+    String? language,
+    String? sortBy,
+    int? pageSize,
+    int? page,
+  ) {
+    final Uri url = Uri.parse("everything?x=y");
     final queryParams = <String, String>{};
     if (query != null) queryParams["q"] = query;
     if (queryInTitle != null) queryParams["qInTitle"] = queryInTitle;
@@ -79,9 +84,15 @@ class Util {
     return url.replace(queryParameters: queryParams).toString();
   }
 
-  static String buildTopHeadlinesUrl(String? country, String? category,
-      String? sources, String? query, int? pageSize, int? page) {
-    final url = Uri.parse("top-headlines?x=y");
+  static String buildTopHeadlinesUrl(
+    String? country,
+    String? category,
+    String? sources,
+    String? query,
+    int? pageSize,
+    int? page,
+  ) {
+    final Uri url = Uri.parse("top-headlines?x=y");
     final queryParams = <String, String>{};
     if (country != null) queryParams["country"] = country;
     if (category != null) queryParams["category"] = category;

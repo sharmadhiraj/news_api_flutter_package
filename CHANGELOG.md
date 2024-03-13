@@ -1,3 +1,7 @@
+## [1.2.0]
+
+* Internal improvements
+
 ## [1.1.1]
 
 * Internal improvements
