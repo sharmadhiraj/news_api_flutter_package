@@ -1,6 +1,6 @@
 name: news_api_flutter_package
 description: Flutter package for accessing News API. (https://newsapi.org/)
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/sharmadhiraj/news_api_flutter_package
 
 environment:
@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.1
+  http: ^1.5.0
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0

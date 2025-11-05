@@ -7,6 +7,8 @@ import 'package:news_api_flutter_package/news_api_flutter_package.dart';
 class HomePage extends StatelessWidget {
   final NewsAPI _newsAPI = NewsAPI(apiKey: "API_KEY");
 
+  HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
