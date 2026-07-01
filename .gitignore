@@ -30,6 +30,9 @@
 .pub/
 build/
 
+# This is a package, not an app: pubspec.lock isn't authoritative for consumers.
+/pubspec.lock
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
@@ -64,6 +67,7 @@ build/
 **/ios/Flutter/app.zip
 **/ios/Flutter/flutter_assets/
 **/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/ephemeral/
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 

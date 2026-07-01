@@ -1,4 +1,26 @@
-include: package:flutter_lints/flutter.yaml
+include: package:lints/recommended.yaml
+
+# example/ is its own Flutter package with its own analysis_options.yaml and
+# CI job; excluding it here avoids "package not found" errors whenever its
+# dependencies haven't been resolved (e.g. a fresh clone, or this package's
+# own Dart-only CI job).
+analyzer:
+  exclude:
+    - example/**
 
 linter:
   rules:
+    - unrelated_type_equality_checks
+    - cast_nullable_to_non_nullable
+    - avoid_void_async
+    - unawaited_futures
+    - type_annotate_public_apis
+    - always_declare_return_types
+    - avoid_relative_lib_imports
+    - depend_on_referenced_packages
+    - use_enums
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - require_trailing_commas
+    - unnecessary_brace_in_string_interps
+    - avoid_print

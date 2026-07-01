@@ -1,72 +1,123 @@
 # News API Flutter Package
 
-Flutter package for accessing News API. ([https://newsapi.org/](https://newsapi.org/))
+[![pub package](https://img.shields.io/pub/v/news_api_flutter_package.svg)](https://pub.dev/packages/news_api_flutter_package)
+[![CI](https://github.com/sharmadhiraj/news_api_flutter_package/actions/workflows/ci.yml/badge.svg)](https://github.com/sharmadhiraj/news_api_flutter_package/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/sharmadhiraj/news_api_flutter_package/blob/master/LICENSE)
+
+A Dart/Flutter client for [News API](https://newsapi.org/), with type-safe parameters, structured
+responses, and no unnecessary dependencies.
 
 ## Getting Started
 
 * [Installation Guide](https://pub.dev/packages/news_api_flutter_package/install)
 * [Example Project](https://github.com/sharmadhiraj/news_api_flutter_package/tree/master/example)
+* [Get an API key](https://newsapi.org/register)
 
 ## Initialization
 
-```dart
+Configure a shared instance once, e.g. in `main()`:
 
-NewsAPI _newsAPI = NewsAPI("your_api_key");
+```
+NewsAPI.init(apiKey: "your_api_key");
 ```
 
-[Get API key from here](https://newsapi.org/register)
+Then use it anywhere via `NewsAPI.instance` (throws `StateError` if called before `init()`):
 
-### Top Headlines
-
-```dart
-
-Future<List<Article>> articleList = _newsAPI.getTopHeadlines();
+```
+final response = await NewsAPI.instance.getTopHeadlines(country: NewsCountry.us);
 ```
 
-**Parameters**  
-*String country, String category, String sources, String query, int pageSize, int page*
+`NewsAPI.instance` lives for your app's lifetime, so you don't need to call `close()` on it.
 
-[Details on request and parameters](https://newsapi.org/docs/endpoints/top-headlines)
+## Top Headlines
 
-### Everything
-
-```dart
-
-Future<List<Article>> articleList = _newsAPI.getEverything();
+```
+final response = await NewsAPI.instance.getTopHeadlines(country: NewsCountry.us);
+print(response.totalResults);
+print(response.articles);
 ```
 
-**Parameters**  
-*String query, String queryInTitle, String sources, String domains, String excludeDomains, DateTime
-from, DateTime to, String language, String sortBy, int pageSize, int page*
+| Parameter  | Type                            | Notes                                                     |
+|------------|---------------------------------|-----------------------------------------------------------|
+| `country`  | [`NewsCountry?`][NewsCountry]   | Cannot be combined with `sources`.                        |
+| `category` | [`NewsCategory?`][NewsCategory] | Cannot be combined with `sources`.                        |
+| `sources`  | `List<String>?`                 | Source IDs. Cannot be combined with `country`/`category`. |
+| `query`    | `String?`                       | Keywords or phrase to search for.                         |
+| `pageSize` | `int?`                          | Results per page (max 100).                               |
+| `page`     | `int?`                          | Page number.                                              |
 
-[Details on request and parameters](https://newsapi.org/docs/endpoints/everything)
+[Endpoint details](https://newsapi.org/docs/endpoints/top-headlines)
 
-### Sources
+## Everything
 
-```dart
-
-Future<List<Source>> sources = _newsAPI.getSources();
+```
+final response = await NewsAPI.instance.getEverything(
+  query: "bitcoin",
+  language: NewsLanguage.en,
+  sortBy: ArticleSortBy.publishedAt,
+);
 ```
 
-**Parameters**  
-*String category, String language, String country*
+| Parameter        | Type                            | Notes                                          |
+|------------------|---------------------------------|------------------------------------------------|
+| `query`          | `String?`                       | Keywords or phrase to search for.              |
+| `queryInTitle`   | `String?`                       | Keywords or phrase, restricted to the title.   |
+| `searchIn`       | `Set<ArticleSearchIn>?`         | Fields to search: title, description, content. |
+| `sources`        | `List<String>?`                 | Source IDs.                                    |
+| `domains`        | `List<String>?`                 | Domains to include.                            |
+| `excludeDomains` | `List<String>?`                 | Domains to exclude.                            |
+| `from`           | `DateTime?`                     | Oldest article date/time.                      |
+| `to`             | `DateTime?`                     | Newest article date/time.                      |
+| `language`       | [`NewsLanguage?`][NewsLanguage] | Article language.                              |
+| `sortBy`         | `ArticleSortBy?`                | `relevancy`, `popularity`, or `publishedAt`.   |
+| `pageSize`       | `int?`                          | Results per page (max 100).                    |
+| `page`           | `int?`                          | Page number.                                   |
 
-[Details on request and parameters](https://newsapi.org/docs/endpoints/sources)
+[Endpoint details](https://newsapi.org/docs/endpoints/everything)
 
-### Errors
+## Sources
 
-Any error occurred will be instance of ApiError.
+```
+final sources = await NewsAPI.instance.getSources(category: NewsCategory.technology);
+```
 
-```dart
-class ApiError {
-  String code;
-  String message;
+| Parameter  | Type                            | Notes               |
+|------------|---------------------------------|---------------------|
+| `category` | [`NewsCategory?`][NewsCategory] | Filter by category. |
+| `language` | [`NewsLanguage?`][NewsLanguage] | Filter by language. |
+| `country`  | [`NewsCountry?`][NewsCountry]   | Filter by country.  |
+
+[Endpoint details](https://newsapi.org/docs/endpoints/sources)
+
+## Errors
+
+Failed requests throw a `NewsApiException` with `code` and `message`:
+
+```
+try {
+  final response = await NewsAPI.instance.getTopHeadlines();
+} on NewsApiException catch (e) {
+  print("${e.code}: ${e.message}");
 }
 ```
 
-[Details on errors](https://newsapi.org/docs/errors)
+[Details on error codes](https://newsapi.org/docs/errors)
 
-<hr/>
+## Custom HTTP Client
 
-I'm always working on making improvements. If you have any feedback, issues, or suggestions, feel
-free to reach out. Happy coding!
+`NewsAPI.init()` accepts an optional `http.Client`:
+
+```
+NewsAPI.init(apiKey: "your_api_key", client: myClient);
+```
+
+* **Testing** — pass a `MockClient` to avoid real network calls.
+* **Caching** — News API's free plan has tight rate limits; wrap a caching `http.Client` if needed.
+* **Retrying** — `package:http/retry.dart`'s `RetryClient` retries transient failures with backoff:
+  `NewsAPI.init(apiKey: "your_api_key", client: RetryClient(http.Client()))`.
+
+[NewsCountry]: https://pub.dev/documentation/news_api_flutter_package/latest/news_api_flutter_package/NewsCountry.html
+
+[NewsCategory]: https://pub.dev/documentation/news_api_flutter_package/latest/news_api_flutter_package/NewsCategory.html
+
+[NewsLanguage]: https://pub.dev/documentation/news_api_flutter_package/latest/news_api_flutter_package/NewsLanguage.html

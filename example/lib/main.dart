@@ -1,8 +1,12 @@
-import 'package:example/screens/home.dart';
+import 'package:example/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:news_api_flutter_package/news_api_flutter_package.dart';
+
+const _apiKey = "NEWS_API_KEY";
 
 void main() {
-  runApp(MyApp());
+  NewsAPI.init(apiKey: _apiKey);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -12,7 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "News API Example Project",
-      home: HomePage(),
+      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      home: const HomeScreen(),
     );
   }
 }
